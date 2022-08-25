@@ -12,6 +12,7 @@ include_directories(
     "./include"
     "./include/livelink"
     "./include/mediapipe"
+    "./include/nlohmann"
     "./include/blendshape"
 )
 
@@ -22,10 +23,19 @@ link_directories(
     "./lib"
 )
 
-set (SRC ./main.cpp)
-
-add_executable(${PROJECT_NAME} ${SRC})
-
-target_link_libraries(${PROJECT_NAME} opencv_world3410 onnxruntime onnxruntime_providers_cuda onnxruntime_providers_shared onnxruntime_providers_tensorrt mediapipe)
-
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+
+file(GLOB srcs RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+
+foreach(mainfile IN LISTS srcs)
+    get_filename_component(srcname ${mainfile} NAME_WE)
+    add_executable(${srcname} ${mainfile})
+    target_link_libraries(${srcname}
+        opencv_world3410
+        onnxruntime
+        onnxruntime_providers_cuda
+        onnxruntime_providers_shared
+        onnxruntime_providers_tensorrt
+        mediapipe
+    )
+endforeach()

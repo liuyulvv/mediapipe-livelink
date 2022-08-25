@@ -1,9 +1,13 @@
 #include "asio.hpp"
 #include "livelink.hpp"
 #include "mediapipe.hpp"
+#include "nlohmann/json.hpp"
+#include <fstream>
 #include <iostream>
 #include <thread>
 #include <vector>
+
+using json = nlohmann::json;
 
 class Logger : public MediapipeLogger {
 public:
@@ -25,14 +29,18 @@ int main() {
     auto interface = CreateMediapipeInterface();
     interface->SetLogger(logger);
 
-    LiveLink::FaceLiveLink faceLiveLink;
+    // init blend shape config
+    std::ifstream config("blend_shape_config.json");
+    auto jsonData = json::parse(config);
+
+    LiveLink::FaceLiveLink faceLiveLink(jsonData);
 
     constexpr char windowName[] = "MediaPipe";
     cv::namedWindow(windowName);
     cv::VideoCapture capture;
 
-    capture.open("D:/video/pml.mp4");
-    bool isCamera = false;
+    capture.open(0);
+    bool isCamera = true;
 
     cv::Mat outputBGRFrame;
     bool grabFrames = true;
@@ -40,7 +48,7 @@ int main() {
         logger->Log("VideoCapture is not open");
     }
     interface->SetResourceDir("");
-    interface->SetGraph("holistic_tracking_onnx_cuda.pbtxt");
+    interface->SetGraph("iris_tracking_cpu.pbtxt");
 
     auto matCallback = [&](const cv::Mat& frame) {
         cv::cvtColor(frame, outputBGRFrame, cv::COLOR_RGB2BGR);
@@ -53,10 +61,15 @@ int main() {
     };
 
     auto landmarkCallback = [&](const std::vector<std::vector<double>>& data) {
-        faceLiveLink.Send(sendCallback);
+        faceLiveLink.Process(sendCallback, data);
     };
 
-    interface->CreateObserver("face_landmarks", landmarkCallback);
+    auto tempCallback = [&](const std::vector<std::vector<double>>& data) {
+        // faceLiveLink.Process(sendCallback, data);
+    };
+
+    interface->CreateObserver("face_landmarks_with_iris", landmarkCallback);
+    interface->CreateObserver("face_geometry", tempCallback);
     interface->Start();
 
     while (grabFrames) {
