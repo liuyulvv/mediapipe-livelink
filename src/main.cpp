@@ -39,16 +39,19 @@ int main() {
     cv::namedWindow(windowName);
     cv::VideoCapture capture;
 
-    capture.open(0);
+    capture.open(1);
     bool isCamera = true;
 
     cv::Mat outputBGRFrame;
+    cv::Mat cameraBGRFrame;
     bool grabFrames = true;
     if (!capture.isOpened()) {
         logger->Log("VideoCapture is not open");
     }
     interface->SetResourceDir("");
     interface->SetGraph("iris_tracking_cpu.pbtxt");
+
+    int i = 1;
 
     auto matCallback = [&](const cv::Mat& frame) {
         cv::cvtColor(frame, outputBGRFrame, cv::COLOR_RGB2BGR);
@@ -61,7 +64,12 @@ int main() {
     };
 
     auto landmarkCallback = [&](const std::vector<std::vector<double>>& data) {
+        ++i;
         faceLiveLink.Process(sendCallback, data);
+        if (i == 51) {
+            faceLiveLink.Renew(sendCallback);
+            exit(0);
+        }
     };
 
     auto tempCallback = [&](const std::vector<std::vector<double>>& data) {
@@ -69,11 +77,9 @@ int main() {
     };
 
     interface->CreateObserver("face_landmarks_with_iris", landmarkCallback);
-    interface->CreateObserver("face_geometry", tempCallback);
     interface->Start();
 
     while (grabFrames) {
-        cv::Mat cameraBGRFrame;
         capture >> cameraBGRFrame;
         if (isCamera) {
             cv::flip(cameraBGRFrame, cameraBGRFrame, 1);
@@ -85,7 +91,7 @@ int main() {
         cv::Mat cameraRGBFrame;
         cv::cvtColor(cameraBGRFrame, cameraRGBFrame, cv::COLOR_BGR2RGB);
         interface->Detect(cameraRGBFrame);
-        const int pressed_key = cv::waitKey(40);
+        const int pressed_key = cv::waitKey(100);
         if (pressed_key >= 0 && pressed_key != 255) grabFrames = false;
     }
 
