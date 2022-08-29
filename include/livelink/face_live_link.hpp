@@ -3,8 +3,12 @@
 
 #include "live_link_base.hpp"
 #include "util.hpp"
+#include <fstream>
 #include <iostream>
+#include <random>
 #include <vector>
+
+using json = nlohmann::json;
 
 namespace LiveLink {
 
@@ -17,13 +21,118 @@ public:
     virtual ~FaceLiveLink() = default;
 
     virtual void Process(const SendCallback& callback, const Landmark& landmark) override {
-        UpdateEyeOpen(landmark);
+        // // 54, 53, 52, 51
+        // json data(blendShape_);
+        // std::ofstream file("res/blendshape/" + std::to_string(index_) + ".json");
+        // file << data;
+        // json data1(landmark);
+        // std::ofstream file1("res/landmark/" + std::to_string(index_++) + ".json");
+        // file1 << data1;
+        // for (int i = 0; i < blendShape_.size(); ++i) {
+        //     if (i >= 51 && i <= 54) {
+        //         blendShape_[i] = 0;
+        //     } else {
+        //         std::random_device rd;
+        //         std::mt19937 seed(rd());
+        //         // std::uniform_int_distribution<> gen(0, 255);
+        //         std::uniform_real_distribution<float> gen(0, 1);
+        //         blendShape_[i] = gen(seed);
+        //     }
+        // }
+        UpdateEyeBlink(landmark);
+        UpdateMouth(landmark);
+        UpdateBrow(landmark);
+        UpdatePupil(landmark);
+        Encode();
+        callback(buffer_);
+    }
+
+    void Renew(const SendCallback& callback) {
+        for (int i = 0; i < blendShape_.size(); ++i) {
+            blendShape_[i] = 0;
+        }
         Encode();
         callback(buffer_);
     }
 
 private:
-    void UpdateEyeOpen(const Landmark& landmark) {
+    void UpdatePupil(const Landmark& landmark) {
+        auto pupil = json_["pupil"];
+        auto leftPupilIndex = pupil["left"].get<std::vector<int>>();
+        auto rightPupilIndex = pupil["right"].get<std::vector<int>>();
+        auto leftPupil = GetLandmark(landmark, leftPupilIndex);
+        auto rightPupil = GetLandmark(landmark, rightPupilIndex);
+
+        auto eye = json_["eye"];
+        auto leftEyeIndex = eye["left"].get<std::vector<int>>();
+        auto rightEyeIndex = eye["right"].get<std::vector<int>>();
+
+        auto& leftEyeOuterCorner = landmark[leftEyeIndex[0]];
+        auto& leftEyeInnerCorner = landmark[leftEyeIndex[1]];
+
+        auto& rightEyeOuterCorner = landmark[rightEyeIndex[0]];
+        auto& rightEyeInnerCorner = landmark[rightEyeIndex[1]];
+
+        auto leftEyeWidth = Distance(leftEyeOuterCorner, leftEyeInnerCorner);
+        auto rightEyeWidth = Distance(rightEyeOuterCorner, rightEyeInnerCorner);
+
+        auto leftEyeMidPoint = Average(leftEyeOuterCorner, leftEyeInnerCorner);
+        auto rightEyeMidPoint = Average(rightEyeOuterCorner, rightEyeInnerCorner);
+
+        auto leftDx = leftEyeMidPoint[0] - leftPupil[0][0];
+        auto leftDy = leftEyeMidPoint[1] - leftPupil[0][1];
+
+        auto rightDx = rightEyeMidPoint[0] - rightPupil[0][0];
+        auto rightDy = rightEyeMidPoint[1] - rightPupil[0][1];
+
+        auto leftRatioX = leftDx / (leftEyeWidth / 2) * 4;
+        auto rightRatioX = rightDx / (rightEyeWidth / 2) * 4;
+
+        auto leftRatioY = leftDy / (leftEyeWidth / 4) * 4;
+        auto rightRatioY = rightDy / (rightEyeWidth / 4) * 4;
+
+        // if (leftRatioX >= 1) {
+        //     blendShape_[int(FaceBlendShape::)]
+        // }
+
+        std::cout << leftRatioX << " " << rightRatioX << " " << leftRatioY << " " << rightRatioY << std::endl;
+    }
+
+    void UpdateBrow(const Landmark& landmark) {
+        auto brow = json_["brow"];
+        auto maxRatio = brow["maxRatio"].get<double>();
+        auto low = brow["low"].get<double>();
+        auto high = brow["high"].get<double>();
+        auto leftBrowIndex = brow["left"].get<std::vector<int>>();
+        auto rightBrowIndex = brow["right"].get<std::vector<int>>();
+        auto leftBrowDistance = GetEyeLidRatio(landmark, leftBrowIndex);
+        auto rightBrowDistance = GetEyeLidRatio(landmark, rightBrowIndex);
+        auto leftBrowRatio = leftBrowDistance / maxRatio - 1;
+        auto rightBrowRatio = leftBrowDistance / maxRatio - 1;
+        auto leftRaiseRatio = Remap(leftBrowRatio, low, high);
+        auto rightRaiseRatio = Remap(rightBrowRatio, low, high);
+        blendShape_[int(FaceBlendShape::BrowOuterUpLeft)] = leftRaiseRatio;
+        blendShape_[int(FaceBlendShape::BrowOuterUpRight)] = rightRaiseRatio;
+        // std::cout << leftRaiseRatio << " " << rightRaiseRatio << std::endl;
+    }
+
+    void UpdateMouth(const Landmark& landmark) {
+        auto mouth = json_["mouth"];
+        auto eyeIndex = mouth["eye"].get<std::vector<int>>();
+        auto mouthIndex = mouth["mouth"].get<std::vector<int>>();
+
+        auto eyeLandmark = GetLandmark(landmark, eyeIndex);
+        auto eyeInnerDistance = Distance(eyeLandmark[0], eyeLandmark[1]);
+
+        auto mouthLandmark = GetLandmark(landmark, mouthIndex);
+        auto mouthOpen = Distance(mouthLandmark[0], mouthLandmark[1]);
+
+        auto mouthY = Remap(mouthOpen / eyeInnerDistance, mouth["low"].get<double>(), mouth["high"].get<double>());
+        blendShape_[int(FaceBlendShape::MouthLowerDownLeft)] = mouthY;
+        blendShape_[int(FaceBlendShape::MouthLowerDownRight)] = mouthY;
+    }
+
+    void UpdateEyeBlink(const Landmark& landmark) {
         auto eye = json_["eye"];
         auto leftIndex = eye["left"].get<std::vector<int>>();
         auto rightIndex = eye["right"].get<std::vector<int>>();
@@ -82,6 +191,7 @@ private:
     int fps = 60;
     int size_ = 61;
     std::vector<char> buffer_;
+    int index_ = 1700;
 };
 
 }  // namespace LiveLink
