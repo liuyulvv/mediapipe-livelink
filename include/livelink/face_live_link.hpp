@@ -21,24 +21,6 @@ public:
     virtual ~FaceLiveLink() = default;
 
     virtual void Process(const SendCallback& callback, const Landmark& landmark) override {
-        // // 54, 53, 52, 51
-        // json data(blendShape_);
-        // std::ofstream file("res/blendshape/" + std::to_string(index_) + ".json");
-        // file << data;
-        // json data1(landmark);
-        // std::ofstream file1("res/landmark/" + std::to_string(index_++) + ".json");
-        // file1 << data1;
-        // for (int i = 0; i < blendShape_.size(); ++i) {
-        //     if (i >= 51 && i <= 54) {
-        //         blendShape_[i] = 0;
-        //     } else {
-        //         std::random_device rd;
-        //         std::mt19937 seed(rd());
-        //         // std::uniform_int_distribution<> gen(0, 255);
-        //         std::uniform_real_distribution<float> gen(0, 1);
-        //         blendShape_[i] = gen(seed);
-        //     }
-        // }
         UpdateEyeBlink(landmark);
         UpdateMouth(landmark);
         UpdateBrow(landmark);
@@ -90,12 +72,6 @@ private:
 
         auto leftRatioY = leftDy / (leftEyeWidth / 4) * 4;
         auto rightRatioY = rightDy / (rightEyeWidth / 4) * 4;
-
-        // if (leftRatioX >= 1) {
-        //     blendShape_[int(FaceBlendShape::)]
-        // }
-
-        std::cout << leftRatioX << " " << rightRatioX << " " << leftRatioY << " " << rightRatioY << std::endl;
     }
 
     void UpdateBrow(const Landmark& landmark) {
@@ -113,7 +89,6 @@ private:
         auto rightRaiseRatio = Remap(rightBrowRatio, low, high);
         blendShape_[int(FaceBlendShape::BrowOuterUpLeft)] = leftRaiseRatio;
         blendShape_[int(FaceBlendShape::BrowOuterUpRight)] = rightRaiseRatio;
-        // std::cout << leftRaiseRatio << " " << rightRaiseRatio << std::endl;
     }
 
     void UpdateMouth(const Landmark& landmark) {
