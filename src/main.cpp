@@ -39,7 +39,7 @@ int main() {
     cv::namedWindow(windowName);
     cv::VideoCapture capture;
 
-    capture.open(1);
+    capture.open(0);
     bool isCamera = true;
 
     cv::Mat outputBGRFrame;
@@ -51,8 +51,6 @@ int main() {
     interface->SetResourceDir("");
     interface->SetGraph("iris_tracking_cpu.pbtxt");
 
-    int i = 1;
-
     auto matCallback = [&](const cv::Mat& frame) {
         cv::cvtColor(frame, outputBGRFrame, cv::COLOR_RGB2BGR);
         cv::imshow(windowName, outputBGRFrame);
@@ -63,13 +61,10 @@ int main() {
         socket.send_to(asio::buffer(buffer), serverEndpoint);
     };
 
+    faceLiveLink.Renew(sendCallback);
+
     auto landmarkCallback = [&](const std::vector<std::vector<double>>& data) {
-        ++i;
         faceLiveLink.Process(sendCallback, data);
-        if (i == 51) {
-            faceLiveLink.Renew(sendCallback);
-            exit(0);
-        }
     };
 
     auto tempCallback = [&](const std::vector<std::vector<double>>& data) {
