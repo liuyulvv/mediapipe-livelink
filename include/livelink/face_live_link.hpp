@@ -22,9 +22,10 @@ public:
 
     virtual void Process(const SendCallback& callback, const Landmark& landmark) override {
         UpdateEyeBlink(landmark);
-        UpdateMouth(landmark);
-        UpdateBrow(landmark);
+        UpdateMouthOpen(landmark);
+        UpdateBrowUp(landmark);
         UpdatePupil(landmark);
+        UpdateSmile(landmark);
         Encode();
         callback(buffer_);
     }
@@ -74,7 +75,34 @@ private:
         auto rightRatioY = rightDy / (rightEyeWidth / 4) * 4;
     }
 
-    void UpdateBrow(const Landmark& landmark) {
+    void UpdateSmile(const Landmark& landmark) {
+        auto smile = json_["smile"];
+        auto lipUpperIndex = smile["lip"]["upper"].get<std::vector<int>>();
+        auto mouthLeftIndex = smile["mouth"]["left"].get<std::vector<int>>();
+        auto mouthRightIndex = smile["mouth"]["right"].get<std::vector<int>>();
+        auto low = smile["low"].get<double>();
+        auto high = smile["high"].get<double>();
+        auto lipUpperLandmark = GetLandmark(landmark, lipUpperIndex);
+        auto mouthLeftLandmark = GetLandmark(landmark, mouthLeftIndex);
+        auto mouthRightLandmark = GetLandmark(landmark, mouthRightIndex);
+        auto smileLeft = lipUpperLandmark.at(0).at(1) - mouthLeftLandmark.at(0).at(1);
+        auto smileRight = lipUpperLandmark.at(0).at(1) - mouthRightLandmark.at(0).at(1);
+        auto smileLeftRatio = Remap(smileLeft, low, high);
+        auto smileRightRatio = Remap(smileRight, low, high);
+        if (smileLeftRatio < 0.98) {
+            blendShape_[int(FaceBlendShape::MouthSmileLeft)] = blendShape_[int(FaceBlendShape::MouthSmileLeft)] / 3;
+        } else {
+            blendShape_[int(FaceBlendShape::MouthSmileLeft)] = 1;
+        }
+        if (smileRightRatio < 0.98) {
+            blendShape_[int(FaceBlendShape::MouthSmileRight)] = blendShape_[int(FaceBlendShape::MouthSmileRight)] / 3;
+        } else {
+            blendShape_[int(FaceBlendShape::MouthSmileRight)] = 1;
+        }
+    }
+
+    // 测试结论: MediaPipe检测眉毛对摄像头的角度有一定要求，且眉毛网上翘时检测精度不够
+    void UpdateBrowUp(const Landmark& landmark) {
         auto brow = json_["brow"];
         auto maxRatio = brow["maxRatio"].get<double>();
         auto low = brow["low"].get<double>();
@@ -91,7 +119,7 @@ private:
         blendShape_[int(FaceBlendShape::BrowOuterUpRight)] = rightRaiseRatio;
     }
 
-    void UpdateMouth(const Landmark& landmark) {
+    void UpdateMouthOpen(const Landmark& landmark) {
         auto mouth = json_["mouth"];
         auto eyeIndex = mouth["eye"].get<std::vector<int>>();
         auto mouthIndex = mouth["mouth"].get<std::vector<int>>();
