@@ -86,7 +86,7 @@ int main() {
         cv::Mat cameraRGBFrame;
         cv::cvtColor(cameraBGRFrame, cameraRGBFrame, cv::COLOR_BGR2RGB);
         interface->Detect(cameraRGBFrame);
-        const int pressed_key = cv::waitKey(100);
+        const int pressed_key = cv::waitKey(33);
         if (pressed_key >= 0 && pressed_key != 255) grabFrames = false;
     }
 
