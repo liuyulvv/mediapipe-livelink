@@ -16,6 +16,7 @@ public:
     using SendCallback = std::function<void(const std::vector<char>& buffer)>;
     using Landmark = std::vector<std::vector<double>>;
     using BlendShape = std::vector<float>;
+    using SmoothBlendShape = std::vector<SmoothDeque>;
 
     explicit LiveLinkBase(const json& config) : json_(config) {}
     virtual ~LiveLinkBase() = default;
@@ -23,18 +24,14 @@ public:
     virtual void Process(const SendCallback& callback, const Landmark& landmark) = 0;
     virtual void Encode() = 0;
 
-    Landmark GetLandmark(const Landmark& landmark, std::vector<int>& index) {
+    std::vector<double> GetLandmark(const Landmark& landmark, int index) const {
+        return landmark[index];
+    }
+
+    Landmark GetLandmark(const Landmark& landmark, std::vector<int>& index) const {
         Landmark ret;
         for (const auto& i : index) {
             ret.push_back(landmark[i]);
-        }
-        return std::move(ret);
-    }
-
-    std::vector<double> Average(const std::vector<double>& x, const std::vector<double>& y) {
-        std::vector<double> ret;
-        for (int i = 0; i < x.size(); ++i) {
-            ret.push_back((x[i] + y[i]) / 2);
         }
         return std::move(ret);
     }
@@ -48,7 +45,7 @@ public:
     }
 
     double Clamp(double value, double min, double max) const {
-        return std::max(std::min(value, max), min);
+        return std::min(std::max(value, min), max);
     }
 
     double Remap(double value, double min, double max) const {
