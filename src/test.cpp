@@ -41,6 +41,9 @@ int main() {
     capture.open(0);
     bool isCamera = true;
 
+    // capture.open("bjs.mp4");
+    // bool isCamera = false;
+
     cv::Mat outputBGRFrame;
     cv::Mat cameraBGRFrame;
     bool grabFrames = true;
@@ -48,7 +51,7 @@ int main() {
         logger->Log("VideoCapture is not open");
     }
     interface->SetResourceDir("");
-    interface->SetGraph("iris_tracking_cpu.pbtxt");
+    interface->SetGraph("face_mesh_desktop_live.pbtxt");
 
     auto matCallback = [&](const cv::Mat& frame) {
         cv::cvtColor(frame, outputBGRFrame, cv::COLOR_RGB2BGR);
@@ -66,11 +69,7 @@ int main() {
         faceLiveLink.Process(sendCallback, data);
     };
 
-    auto tempCallback = [&](const std::vector<std::vector<double>>& data) {
-        // faceLiveLink.Process(sendCallback, data);
-    };
-
-    interface->CreateObserver("face_landmarks_with_iris", landmarkCallback);
+    interface->GetFaceMesh(landmarkCallback);
     interface->Start();
 
     while (grabFrames) {
@@ -88,7 +87,6 @@ int main() {
         const int pressed_key = cv::waitKey(100);
         if (pressed_key >= 0 && pressed_key != 255) grabFrames = false;
     }
-
     interface->Stop();
     delete interface;
     return 0;
