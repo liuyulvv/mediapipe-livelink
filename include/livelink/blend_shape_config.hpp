@@ -1,6 +1,9 @@
 #ifndef BLEND_SHAPE_CONFIG_HPP
 #define BLEND_SHAPE_CONFIG_HPP
 
+#include <deque>
+#include <numeric>
+
 namespace LiveLink {
 
 enum class FaceBlendShape {
@@ -67,36 +70,28 @@ enum class FaceBlendShape {
     RightEyeRoll
 };
 
-// struct PCF {
-//     PCF(int near = 1,
-//         int far = 10000,
-//         int height = 1920,
-//         int width = 1080,
-//         double fy = 1074.520446598223) : near_(near),
-//                                          far_(far),
-//                                          height_(height),
-//                                          width_(width),
-//                                          fy_(fy) {
-//         fov_y_ = 2 * std::atan(height / (2 * fy_));
-//         auto heightAtNear = 2 * near_ * std::tan(0.5 * fov_y_);
-//         auto widthAtNear = width * heightAtNear / height;
-//         left_ = -0.5 * widthAtNear;
-//         right_ = 0.5 * widthAtNear;
-//         bottom_ = -0.5 * heightAtNear;
-//         top_ = 0.5 * heightAtNear;
-//     }
+class SmoothDeque {
+public:
+    SmoothDeque() = delete;
+    explicit SmoothDeque(int size) : size_(size) {}
 
-//     int near_;
-//     int far_;
-//     int height_;
-//     int width_;
-//     int fy_;
-//     int fov_y_;
-//     int left_;
-//     int right_;
-//     int bottom_;
-//     int top_;
-// };
+    double Push(double value) {
+        if (deque_.size() == size_) {
+            deque_.pop_front();
+        }
+        deque_.push_back(value);
+        return Mean();
+    }
+
+    double Mean() const {
+        double sum = std::accumulate(deque_.begin(), deque_.end(), 0.0);
+        return sum / deque_.size();
+    }
+
+private:
+    int size_;
+    std::deque<double> deque_;
+};
 
 }  // namespace LiveLink
 

@@ -1,7 +1,7 @@
 {
     "eye": {
         "left": [
-            130,
+            33,
             133,
             160,
             159,
@@ -20,78 +20,76 @@
             374,
             380
         ],
-        "low": 0.25,
-        "high": 0.75,
+        "low": 0.4,
+        "high": 0.7,
         "maxRatio": 0.285
     },
-    "mouth": {
-        "eye": [
-            133,
-            362
+    "squint": {
+        "left": [
+            253,
+            450
         ],
-        "mouth": [
-            13,
-            14
+        "right": [
+            23,
+            230
         ],
-        "low": 0.17,
-        "high": 0.5
+        "low": 0.37,
+        "high": 0.44
     },
     "brow": {
-        "left": [
-            35,
-            244,
-            63,
-            105,
-            66,
-            229,
-            230,
-            231
+        "left": 257,
+        "right": 27,
+        "innerBrow": 9,
+        "upperNose": 6,
+        "leftLower": [
+            283,
+            282,
+            295
         ],
-        "right": [
-            265,
-            464,
-            293,
-            334,
-            296,
-            449,
-            450,
-            451
+        "rightLower": [
+            53,
+            52,
+            65
         ],
-        "maxRatio": 1.15,
-        "low": 0.07,
-        "high": 0.125
+        "cheekSquintLeft": [
+            359,
+            342
+        ],
+        "cheekSquintRight": [
+            130,
+            113
+        ],
+        "browDownLow": 1.0,
+        "browDownHigh": 1.2,
+        "browOuterUpLow": 1.25,
+        "browOuterUpHigh": 1.5,
+        "browInnerUpLow": 2.2,
+        "browInnerUpHigh": 2.6,
+        "cheekSquintLow": 0.55,
+        "cheekSquintHigh": 0.63
     },
-    "pupil": {
-        "left": [
-            468,
-            469,
-            470,
-            471,
-            472
-        ],
-        "right": [
-            473,
-            474,
-            475,
-            476,
-            477
-        ]
-    },
-    "smile": {
-        "lip": {
-            "upper": [
-                13
-            ]
-        },
-        "mouth": {
-            "left": [
-                291
-            ],
-            "right": [
-                61
-            ]
-        },
-        "low": -0.25,
-        "high": 0.0
+    "mouth": {
+        "upperLip": 13,
+        "lowerLip": 14,
+        "upperOuterLip": 12,
+        "mouthCornerLeft": 291,
+        "mouthCornerRight": 61,
+        "lowestChin": 152,
+        "noseTip": 1,
+        "upperHead": 10,
+        "mouthFrownLeft": 422,
+        "mouthFrownRight": 202,
+        "mouthLeftStretch": 287,
+        "mouthRightStretch": 57,
+        "jawOpenLow": 0.5,
+        "jawOpenHigh": 0.55,
+        "smileLow": -0.25,
+        "smileHigh": 0.25,
+        "mouthFrownLow": 0.4,
+        "mouthFrownHigh": 0.9,
+        "mouthLeftLow": -3.4,
+        "mouthLeftHigh": -2.3,
+        "mouthRightLow": 1.5,
+        "mouthRightHigh": 3.0
     }
 }
