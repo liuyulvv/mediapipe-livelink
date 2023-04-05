@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 
-set (OpenCV_DIR "D:/OpenCV/build/x64/vc15/lib")
+set (OpenCV_DIR "C:/Program Files/OpenCV/x64/vc15/lib")
 find_package(OpenCV REQUIRED)
 
 include_directories(
