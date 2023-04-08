@@ -67,11 +67,11 @@ int main() {
     // init asio udp socket
     asio::io_context ioContext;
     asio::ip::udp::resolver resolver(ioContext);
-    asio::ip::udp::endpoint serverEndpoint(asio::ip::address::from_string("127.0.0.1"), 11111);
+    asio::ip::udp::endpoint serverEndpoint(asio::ip::address::from_string("192.168.123.184"), 11111);
     asio::ip::udp::socket sock(ioContext);
 
     sock.open(asio::ip::udp::v4());
-    size_t blend_shape_size = 52;
+    unsigned blend_shape_size = 52;
     float* blend_shape_list = new float[blend_shape_size];
     const std::string GRAPH_PATH = "mediapipe/graphs/face_blendshape/face_blendshape_desktop_live.pbtxt";
     CreateFaceBlendShapeInterface(GRAPH_PATH.c_str());

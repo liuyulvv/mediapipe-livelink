@@ -25,7 +25,7 @@ LibraryExport void FaceMeshProcess(void* mat);
 LibraryExport void SetFaceMeshObserveCallback(landmark_callback callback);
 LibraryExport void ObserveFaceMesh();
 LibraryExport void AddFaceMeshPoller();
-LibraryExport void GetFaceMeshOutput(NormalizedLandmark* normalized_landmark_list, size_t size);
+LibraryExport void GetFaceMeshOutput(NormalizedLandmark* normalized_landmark_list, unsigned size);
 LibraryExport void StopFaceMesh();
 
 LibraryExport void CreateHandTrackInterface(const char* graph_name);
@@ -35,7 +35,7 @@ LibraryExport void HandTrackProcess(void* mat);
 LibraryExport void SetHandTrackObserveCallback(landmark_callback callback);
 LibraryExport void ObserveHandTrack();
 LibraryExport void AddHandTrackPoller();
-LibraryExport void GetHandTrackOutput(NormalizedLandmark* normalized_landmark_list, size_t size);
+LibraryExport void GetHandTrackOutput(NormalizedLandmark* normalized_landmark_list, unsigned size);
 LibraryExport void StopHandTrack();
 
 LibraryExport void CreatePoseTrackInterface(const char* graph_name);
@@ -45,7 +45,7 @@ LibraryExport void PoseTrackProcess(void* mat);
 LibraryExport void SetPoseTrackObserveCallback(landmark_callback callback);
 LibraryExport void ObservePoseTrack();
 LibraryExport void AddPoseTrackPoller();
-LibraryExport void GetPoseTrackOutput(NormalizedLandmark* normalized_landmark_list, size_t size);
+LibraryExport void GetPoseTrackOutput(NormalizedLandmark* normalized_landmark_list, unsigned size);
 LibraryExport void StopPoseTrack();
 
 LibraryExport void CreateHolisticTrackInterface(const char* graph_name);
@@ -65,7 +65,7 @@ LibraryExport void FaceBlendShapeProcess(void* mat);
 LibraryExport void SetFaceBlendShapeCallback(blend_shape_callback callback);
 LibraryExport void ObserveFaceBlendShape();
 LibraryExport void AddFaceBlendShapePoller();
-LibraryExport void GetFaceBlendShapeOutput(float* blend_shape_list, size_t size);
+LibraryExport void GetFaceBlendShapeOutput(float* blend_shape_list, unsigned size);
 LibraryExport void StopFaceBlendShape();
 
 #ifdef __cplusplus
