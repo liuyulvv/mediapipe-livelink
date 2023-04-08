@@ -67,10 +67,10 @@ int main() {
     // init asio udp socket
     asio::io_context ioContext;
     asio::ip::udp::resolver resolver(ioContext);
-    asio::ip::udp::endpoint serverEndpoint(asio::ip::address::from_string("192.168.123.184"), 11111);
+    asio::ip::udp::endpoint serverEndpoint(asio::ip::address::from_string("127.0.0.1"), 11111);
     asio::ip::udp::socket sock(ioContext);
-
     sock.open(asio::ip::udp::v4());
+
     unsigned blend_shape_size = 52;
     float* blend_shape_list = new float[blend_shape_size];
     const std::string GRAPH_PATH = "mediapipe/graphs/face_blendshape/face_blendshape_desktop_live.pbtxt";
@@ -78,7 +78,11 @@ int main() {
 
     cv::Mat camera_bgr_frame;
     cv::VideoCapture capture;
+#if defined(_WIN32)
+    capture.open(0, cv::CAP_DSHOW);
+#else
     capture.open(0);
+#endif
     bool is_camera = true;
     bool grab_frame = true;
     if (!capture.isOpened()) {
