@@ -17,16 +17,16 @@ git clone https://github.com/liuyulvv/mediapipe_library.git
 2. 获取动态链接库:
 
 ```bash
-bazel build -c dbg --define MEDIAPIPE_DISABLE_GPU=1 --action_env PYTHON_BIN_PATH="D://Python//python.exe" mediapipe/library:libmediapipe.dll
-bazel build -c opt --define MEDIAPIPE_DISABLE_GPU=1 --action_env PYTHON_BIN_PATH="D://Python//python.exe" mediapipe/library:libmediapipe.dll
+bazel build -c dbg --define MEDIAPIPE_DISABLE_GPU=1 --action_env PYTHON_BIN_PATH="D://Python//python.exe" mediapipe/library:mediapipe
+bazel build -c opt --define MEDIAPIPE_DISABLE_GPU=1 --action_env PYTHON_BIN_PATH="D://Python//python.exe" mediapipe/library:mediapipe
 ```
 
 根据你的需要获取`debug`(dbg)或`release`(opt)的动态链接库。你可以再`bazel-bin\mediapipe\library`中找到以下文件：
 
-- `debug`：libmediapipe.dll，libmediapipe.pdb，libmediapipe.dll.if.lib
-- `release`：libmediapipe.dll，libmediapipe.dll.if.lib
+- `debug`：mediapipe.dll，mediapipe.pdb，mediapipe.if.lib
+- `release`：mediapipe.dll，mediapipe.dll.if.lib
 
-我习惯将`libmediapipe.dll.if.lib`重命名为`libmediapipe.lib`，然后将`libmediapipe.lib`复制到`lib`目录，`libmediapipe.dll`复制到可执行程序的目录。
+我习惯将`mediapipe.if.lib`重命名为`mediapipe.lib`，然后将`mediapipe.lib`复制到`lib`目录，`mediapipe.dll`复制到可执行程序的目录。
 
 > 本项目的CMakeLists.txt将可执行程序输出的目录设置成项目目录。
 

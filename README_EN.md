@@ -17,16 +17,16 @@ git clone https://github.com/liuyulvv/mediapipe_library.git
 2. Get the dynamic link library:
 
 ```bash
-bazel build -c dbg --define MEDIAPIPE_DISABLE_GPU=1 --action_env PYTHON_BIN_PATH="D://Python//python.exe" mediapipe/library:libmediapipe.dll
-bazel build -c opt --define MEDIAPIPE_DISABLE_GPU=1 --action_env PYTHON_BIN_PATH="D://Python//python.exe" mediapipe/library:libmediapipe.dll
+bazel build -c dbg --define MEDIAPIPE_DISABLE_GPU=1 --action_env PYTHON_BIN_PATH="D://Python//python.exe" mediapipe/library:mediapipe
+bazel build -c opt --define MEDIAPIPE_DISABLE_GPU=1 --action_env PYTHON_BIN_PATH="D://Python//python.exe" mediapipe/library:mediapipe
 ```
 
 Get `debug` (dbg) or `release` (opt) DLL according to your needs. You can find the following files in `bazel-bin\mediapipe\library`:
 
-- `debug`：libmediapipe.dll，libmediapipe.pdb，libmediapipe.dll.if.lib
-- `release`：libmediapipe.dll，libmediapipe.dll.if.lib
+- `debug`：mediapipe.dll，mediapipe.pdb，mediapipe.if.lib
+- `release`：mediapipe.dll，mediapipe.dll.if.lib
 
-I used to rename `libmediapipe.dll.if.lib` to `libmediapipe.lib`, then copy `libmediapipe.lib` to the `lib` directory, and `libmediapipe.dll` to the directory of the executable program.
+I used to rename `mediapipe.if.lib` to `mediapipe.lib`, then copy `mediapipe.lib` to the `lib` directory, and `mediapipe.dll` to the directory of the executable program.
 
 > The CMakeLists.txt of this project sets the directory output by the executable program as the project directory.
 
