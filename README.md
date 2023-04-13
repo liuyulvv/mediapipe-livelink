@@ -4,6 +4,8 @@
 
 使用mediapipe进行面部捕捉，通过livelink传输数据至Unreal Engine。
 
+![mediapipe_blendshape_livelink](mediapipe_blendshape_livelink.gif)
+
 ## 如何使用
 
 0. 配置好mediapipe的环境

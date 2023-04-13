@@ -4,6 +4,8 @@
 
 Use mediapipe for facial capture, and transfer data to Unreal Engine through livelink.
 
+![mediapipe_blendshape_livelink](mediapipe_blendshape_livelink.gif)
+
 ## How to use
 
 0. Configure the mediapipe environment
